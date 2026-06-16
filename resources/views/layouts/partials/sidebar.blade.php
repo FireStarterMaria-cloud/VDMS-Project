@@ -1,0 +1,141 @@
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+    <div class="app-brand demo">
+        <a href="{{ route('dashboard') }}" class="app-brand-link">
+            <span class="app-brand-logo demo">
+                <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                    <circle cx="13" cy="13" r="13" fill="#EB0A1E"/>
+                    <text x="13" y="18" text-anchor="middle" fill="white" font-size="11"
+                        font-weight="bold" font-family="Arial, sans-serif">T</text>
+                </svg>
+            </span>
+            <span class="app-brand-text demo menu-text fw-bolder ms-2">VDMS</span>
+        </a>
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+        </a>
+    </div>
+
+    <div class="menu-inner-shadow"></div>
+
+    <ul class="menu-inner py-1">
+
+        <li class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <a href="{{ route('dashboard') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-dashboard"></i>
+                <div>Dashboard</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('vehicles.*') ? 'active' : '' }}">
+            <a href="{{ route('vehicles.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-car"></i>
+                <div>Vehicles</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('sales.*') ? 'active' : '' }}">
+            <a href="{{ route('sales.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-receipt"></i>
+                <div>Sales</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('customers.*') ? 'active' : '' }}">
+            <a href="{{ route('customers.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user"></i>
+                <div>Customers</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('payments.*') ? 'active' : '' }}">
+            <a href="{{ route('payments.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-money"></i>
+                <div>Payments</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('invoices.*') ? 'active' : '' }}">
+            <a href="{{ route('invoices.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div>Invoices</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('purchases.*') ? 'active' : '' }}">
+            <a href="{{ route('purchases.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-purchase-tag-alt"></i>
+                <div>Purchases</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('branch-transfers.*') ? 'active' : '' }}">
+            <a href="#" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-transfer"></i>
+                <div>Branch Transfers</div>
+            </a>
+        </li>
+
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Administration</span>
+        </li>
+
+        @if(auth()->check() && auth()->user()->isHO())
+        <li class="menu-item {{ request()->routeIs('branches.*') ? 'active' : '' }}">
+            <a href="{{ route('branches.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-buildings"></i>
+                <div>Branches</div>
+            </a>
+        </li>
+        @endif
+
+        @if(auth()->check() && auth()->user()->isHO())
+        <li class="menu-item {{ request()->routeIs('analytics.*') ? 'active' : '' }}">
+            <a href="#" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-line-chart"></i>
+                <div>Analytics</div>
+            </a>
+        </li>
+        @endif
+
+        @if(auth()->check() && auth()->user()->isHO())
+        <li class="menu-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+            <a href="{{ route('users.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-group"></i>
+                <div>Users</div>
+            </a>
+        </li>
+        @endif
+
+        @if(auth()->check() && auth()->user()->isSuperAdmin())
+        <li class="menu-item {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}">
+            <a href="#" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-list-check"></i>
+                <div>Audit Logs</div>
+            </a>
+        </li>
+        @endif
+
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Account</span>
+        </li>
+
+        <li class="menu-item">
+            <a href="#" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-cog"></i>
+                <div>Settings</div>
+            </a>
+        </li>
+
+        <li class="menu-item">
+            <a href="#" class="menu-link"
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="menu-icon tf-icons bx bx-power-off"></i>
+                <div>Logout</div>
+            </a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                @csrf
+            </form>
+        </li>
+
+    </ul>
+</aside>
