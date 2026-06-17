@@ -21,7 +21,7 @@
                             <th>Role</th>
                             <th>Branch</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -30,18 +30,35 @@
                             <td>{{ $loop->iteration }}</td>
                             <td><strong>{{ $user->name }}</strong></td>
                             <td>{{ $user->email }}</td>
-                            <td><span class="badge bg-label-primary">{{ ucfirst(str_replace('_', ' ', $user->role?->value ?? '')) }}</span></td>
-                            <td>{{ $user->branch->city ?? 'HO' }}</td>
-                            <td><span class="badge bg-{{ $user->is_active ? 'success' : 'danger' }}">{{ $user->is_active ? 'Active' : 'Inactive' }}</span></td>
                             <td>
-                                <a href="{{ route('users.show', $user) }}" class="btn btn-sm btn-info"><i class="bx bx-show"></i></a>
-                                <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i></a>
-                                @if(auth()->user()->isSuperAdmin() && $user->id !== auth()->id())
-                                <form action="{{ route('users.destroy', $user) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="bx bx-trash"></i></button>
-                                </form>
-                                @endif
+                                <span class="badge bg-label-primary">
+                                    {{ ucfirst(str_replace('_', ' ', $user->role?->value ?? '')) }}
+                                </span>
+                            </td>
+                            <td>{{ $user->branch->city ?? 'Head Office' }}</td>
+                            <td>
+                                <span class="badge bg-{{ $user->is_active ? 'success' : 'danger' }}">
+                                    {{ $user->is_active ? 'Active' : 'Inactive' }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ route('users.show', $user) }}" class="btn btn-sm btn-icon text-info" title="View">
+                                        <i class="bx bx-show fs-5"></i>
+                                    </a>
+                                    <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-icon text-warning" title="Edit">
+                                        <i class="bx bx-edit fs-5"></i>
+                                    </a>
+                                    @if(auth()->user()->isSuperAdmin() && $user->id !== auth()->id())
+                                    <form action="{{ route('users.destroy', $user) }}" method="POST" class="d-inline"
+                                          onsubmit="return confirm('Delete this user?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-icon text-danger" title="Delete">
+                                            <i class="bx bx-trash fs-5"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         @empty

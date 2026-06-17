@@ -69,9 +69,9 @@
         </li>
 
         <li class="menu-item {{ request()->routeIs('branch-transfers.*') ? 'active' : '' }}">
-            <a href="#" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-transfer"></i>
-                <div>Branch Transfers</div>
+            <a href="{{ route('branch-transfers.index') }}" class="menu-link">
+    <i class="menu-icon tf-icons bx bx-transfer"></i>
+    <div>Branch Transfers</div>
             </a>
         </li>
 
@@ -90,7 +90,8 @@
 
         @if(auth()->check() && auth()->user()->isHO())
         <li class="menu-item {{ request()->routeIs('analytics.*') ? 'active' : '' }}">
-            <a href="#" class="menu-link">
+           
+        <a href="{{ route('analytics.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-line-chart"></i>
                 <div>Analytics</div>
             </a>
@@ -108,7 +109,7 @@
 
         @if(auth()->check() && auth()->user()->isSuperAdmin())
         <li class="menu-item {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}">
-            <a href="#" class="menu-link">
+           <a href="{{ route('audit-logs.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-list-check"></i>
                 <div>Audit Logs</div>
             </a>
@@ -120,7 +121,7 @@
         </li>
 
         <li class="menu-item">
-            <a href="#" class="menu-link">
+           <a href="{{ route('settings.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-cog"></i>
                 <div>Settings</div>
             </a>

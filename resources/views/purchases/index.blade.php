@@ -24,7 +24,7 @@
                             <th>Purchase Price</th>
                             <th>Payment Method</th>
                             <th>Date</th>
-                            <th>Actions</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,19 +35,28 @@
                             <td>{{ $purchase->supplier_name }}</td>
                             <td>{{ $purchase->branch->city ?? 'N/A' }}</td>
                             <td>Rs. {{ number_format($purchase->purchase_price) }}</td>
-                            <td>{{ ucfirst($purchase->payment_method) }}</td>
+                            <td>{{ ucfirst(str_replace('_', ' ', $purchase->payment_method)) }}</td>
                             <td>{{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d M Y') }}</td>
-                            <td>
-                                <a href="{{ route('purchases.show', $purchase) }}" class="btn btn-sm btn-info"><i class="bx bx-show"></i></a>
-                                @if(!auth()->user()->isSalesStaff())
-                                <a href="{{ route('purchases.edit', $purchase) }}" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i></a>
-                                @endif
-                                @if(auth()->user()->isHO())
-                                <form action="{{ route('purchases.destroy', $purchase) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="bx bx-trash"></i></button>
-                                </form>
-                                @endif
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ route('purchases.show', $purchase) }}" class="btn btn-sm btn-icon text-info" title="View">
+                                        <i class="bx bx-show fs-5"></i>
+                                    </a>
+                                    @if(!auth()->user()->isSalesStaff())
+                                    <a href="{{ route('purchases.edit', $purchase) }}" class="btn btn-sm btn-icon text-warning" title="Edit">
+                                        <i class="bx bx-edit fs-5"></i>
+                                    </a>
+                                    @endif
+                                    @if(auth()->user()->isHO())
+                                    <form action="{{ route('purchases.destroy', $purchase) }}" method="POST" class="d-inline"
+                                          onsubmit="return confirm('Delete this purchase?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-icon text-danger" title="Delete">
+                                            <i class="bx bx-trash fs-5"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         @empty

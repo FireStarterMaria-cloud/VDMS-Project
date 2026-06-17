@@ -52,17 +52,26 @@
                             </td>
                             <td>{{ $sale->sale_date?->format('d M Y') }}</td>
                             <td>
-                                <a href="{{ route('sales.show', $sale) }}" class="btn btn-sm btn-info"><i class="bx bx-show"></i></a>
-                                @if(!auth()->user()->isAccountant() && !auth()->user()->isSalesStaff())
-                                <a href="{{ route('sales.edit', $sale) }}" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i></a>
-                                @endif
-                                @if(auth()->user()->isHO())
-                                <form action="{{ route('sales.destroy', $sale) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="bx bx-trash"></i></button>
-                                </form>
-                                @endif
-                            </td>
+    <div class="btn-group btn-group-sm" role="group">
+        <a href="{{ route('sales.show', $sale) }}" class="btn btn-sm btn-icon text-info" title="View">
+            <i class="bx bx-show fs-5"></i>
+        </a>
+        @if(!auth()->user()->isAccountant() && !auth()->user()->isSalesStaff())
+        <a href="{{ route('sales.edit', $sale) }}" class="btn btn-sm btn-icon text-warning" title="Edit">
+            <i class="bx bx-edit fs-5"></i>
+        </a>
+        @endif
+        @if(auth()->user()->isHO())
+        <form action="{{ route('sales.destroy', $sale) }}" method="POST" class="d-inline"
+              onsubmit="return confirm('Delete this sale?')">
+            @csrf @method('DELETE')
+            <button type="submit" class="btn btn-sm btn-icon text-danger" title="Delete">
+                <i class="bx bx-trash fs-5"></i>
+            </button>
+        </form>
+        @endif
+    </div>
+</td>
                         </tr>
                         @empty
                         <tr><td colspan="9" class="text-center py-4 text-muted">No sales found.</td></tr>

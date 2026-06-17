@@ -21,9 +21,10 @@
                             <th>Sale</th>
                             <th>Amount</th>
                             <th>Method</th>
+                            <th>Reference</th>
                             <th>Status</th>
                             <th>Date</th>
-                            <th>Actions</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -32,28 +33,38 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>Sale #{{ $payment->sale_id }}</td>
                             <td>Rs. {{ number_format($payment->amount) }}</td>
-                            <td>{{ ucfirst($payment->payment_method) }}</td>
+                            <td>{{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }}</td>
+                            <td>{{ $payment->reference_no ?? 'N/A' }}</td>
                             <td>
                                 <span class="badge bg-{{ $payment->status == 'completed' ? 'success' : ($payment->status == 'pending' ? 'warning' : 'danger') }}">
                                     {{ ucfirst($payment->status) }}
                                 </span>
                             </td>
                             <td>{{ \Carbon\Carbon::parse($payment->payment_date)->format('d M Y') }}</td>
-                            <td>
-                                <a href="{{ route('payments.show', $payment) }}" class="btn btn-sm btn-info"><i class="bx bx-show"></i></a>
-                                @if(auth()->user()->isHO() || auth()->user()->isAccountant())
-                                <a href="{{ route('payments.edit', $payment) }}" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i></a>
-                                @endif
-                                @if(auth()->user()->isHO())
-                                <form action="{{ route('payments.destroy', $payment) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="bx bx-trash"></i></button>
-                                </form>
-                                @endif
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ route('payments.show', $payment) }}" class="btn btn-sm btn-icon text-info" title="View">
+                                        <i class="bx bx-show fs-5"></i>
+                                    </a>
+                                    @if(auth()->user()->isHO() || auth()->user()->isAccountant())
+                                    <a href="{{ route('payments.edit', $payment) }}" class="btn btn-sm btn-icon text-warning" title="Edit">
+                                        <i class="bx bx-edit fs-5"></i>
+                                    </a>
+                                    @endif
+                                    @if(auth()->user()->isHO())
+                                    <form action="{{ route('payments.destroy', $payment) }}" method="POST" class="d-inline"
+                                          onsubmit="return confirm('Delete this payment?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-icon text-danger" title="Delete">
+                                            <i class="bx bx-trash fs-5"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         @empty
-                        <tr><td colspan="7" class="text-center py-4 text-muted">No payments found.</td></tr>
+                        <tr><td colspan="8" class="text-center py-4 text-muted">No payments found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

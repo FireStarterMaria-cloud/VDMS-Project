@@ -2,22 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class AuditLog extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'user_id', 'branch_id', 'action', 'model_type',
-        'model_id', 'old_values', 'new_values', 'ip_address', 'user_agent'
-    ];
-
-    protected $casts = [
-        'old_values' => 'array',
-        'new_values' => 'array',
-        'performed_at' => 'datetime',
+        'user_id', 'branch_id', 'action',
+        'model_type', 'model_id', 'old_values', 'new_values', 'ip_address',
     ];
 
     public function user()

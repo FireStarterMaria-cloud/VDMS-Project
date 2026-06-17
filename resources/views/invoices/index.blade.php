@@ -20,10 +20,11 @@
                             <th>#</th>
                             <th>Invoice No</th>
                             <th>Sale</th>
+                            <th>Branch</th>
                             <th>Total Amount</th>
                             <th>Status</th>
                             <th>Issue Date</th>
-                            <th>Actions</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -32,6 +33,7 @@
                             <td>{{ $loop->iteration }}</td>
                             <td><strong>{{ $invoice->invoice_no }}</strong></td>
                             <td>Sale #{{ $invoice->sale_id }}</td>
+                            <td>{{ $invoice->branch->city ?? 'N/A' }}</td>
                             <td>Rs. {{ number_format($invoice->total_amount) }}</td>
                             <td>
                                 <span class="badge bg-{{ $invoice->status == 'paid' ? 'success' : ($invoice->status == 'issued' ? 'info' : ($invoice->status == 'draft' ? 'warning' : 'danger')) }}">
@@ -39,21 +41,30 @@
                                 </span>
                             </td>
                             <td>{{ \Carbon\Carbon::parse($invoice->issue_date)->format('d M Y') }}</td>
-                            <td>
-                                <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-sm btn-info"><i class="bx bx-show"></i></a>
-                                @if(auth()->user()->isHO() || auth()->user()->isAccountant())
-                                <a href="{{ route('invoices.edit', $invoice) }}" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i></a>
-                                @endif
-                                @if(auth()->user()->isHO())
-                                <form action="{{ route('invoices.destroy', $invoice) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="bx bx-trash"></i></button>
-                                </form>
-                                @endif
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-sm btn-icon text-info" title="View">
+                                        <i class="bx bx-show fs-5"></i>
+                                    </a>
+                                    @if(auth()->user()->isHO() || auth()->user()->isAccountant())
+                                    <a href="{{ route('invoices.edit', $invoice) }}" class="btn btn-sm btn-icon text-warning" title="Edit">
+                                        <i class="bx bx-edit fs-5"></i>
+                                    </a>
+                                    @endif
+                                    @if(auth()->user()->isHO())
+                                    <form action="{{ route('invoices.destroy', $invoice) }}" method="POST" class="d-inline"
+                                          onsubmit="return confirm('Delete this invoice?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-icon text-danger" title="Delete">
+                                            <i class="bx bx-trash fs-5"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         @empty
-                        <tr><td colspan="7" class="text-center py-4 text-muted">No invoices found.</td></tr>
+                        <tr><td colspan="8" class="text-center py-4 text-muted">No invoices found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

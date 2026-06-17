@@ -20,9 +20,9 @@
                             <th>City</th>
                             <th>Country</th>
                             <th>Currency</th>
-                            <th>Vehicles</th>
+                            <th>Phone</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -33,21 +33,30 @@
                             <td>{{ $branch->city }}</td>
                             <td>{{ $branch->country ?? 'Pakistan' }}</td>
                             <td>{{ $branch->currency ?? 'PKR' }}</td>
-                            <td>{{ $branch->vehicles_count }}</td>
+                            <td>{{ $branch->phone ?? 'N/A' }}</td>
                             <td>
                                 <span class="badge bg-{{ $branch->is_active ? 'success' : 'danger' }}">
                                     {{ $branch->is_active ? 'Active' : 'Inactive' }}
                                 </span>
                             </td>
-                            <td>
-                                <a href="{{ route('branches.show', $branch) }}" class="btn btn-sm btn-info"><i class="bx bx-show"></i></a>
-                                <a href="{{ route('branches.edit', $branch) }}" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i></a>
-                                @if(auth()->user()->isSuperAdmin())
-                                <form action="{{ route('branches.destroy', $branch) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?')"><i class="bx bx-trash"></i></button>
-                                </form>
-                                @endif
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ route('branches.show', $branch) }}" class="btn btn-sm btn-icon text-info" title="View">
+                                        <i class="bx bx-show fs-5"></i>
+                                    </a>
+                                    <a href="{{ route('branches.edit', $branch) }}" class="btn btn-sm btn-icon text-warning" title="Edit">
+                                        <i class="bx bx-edit fs-5"></i>
+                                    </a>
+                                    @if(auth()->user()->isSuperAdmin())
+                                    <form action="{{ route('branches.destroy', $branch) }}" method="POST" class="d-inline"
+                                          onsubmit="return confirm('Delete this branch?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-icon text-danger" title="Delete">
+                                            <i class="bx bx-trash fs-5"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         @empty
