@@ -43,6 +43,10 @@
 
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#696cff">
   </head>
 
   <body>
@@ -254,6 +258,115 @@ document.addEventListener('DOMContentLoaded', function() {
     </script>
 
     @yield('page-scripts')
+
+
+    @section('page-scripts')
+<script>
+// Offline Sync Manager - Global
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ Offline Sync Manager Loaded');
+
+    // Attach to all forms that have data-model attribute
+    document.querySelectorAll('form[data-model]').forEach(form => {
+        form.addEventListener('submit', async function(e) {
+            if (navigator.onLine) return;
+
+            e.preventDefault();
+            console.log('🌐 Offline Mode - Saving to local queue');
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                await syncManager.addToLocalQueue({
+                    model_type: this.dataset.model || 'Vehicle',
+                    operation: this.dataset.operation || 'create',
+                    payload: data,
+                    timestamp: new Date().toISOString()
+                });
+
+                alert('🌐 OFFLINE MODE\n\nData has been saved locally.\nIt will automatically sync when internet is back.');
+                this.reset();
+            } catch(err) {
+                console.error(err);
+                alert('❌ Failed to save offline.');
+            }
+        });
+    });
+});
+</script>
+@endsection
+
+
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('Velora SW registered:', reg.scope))
+            .catch(err => console.log('SW registration failed:', err));
+    });
+
+    // Listen for sync message from SW
+    navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data.type === 'SYNC_REQUIRED') {
+            // Trigger sync
+            const pending = JSON.parse(localStorage.getItem('pending_vehicles') || '[]');
+            if (pending.length > 0) {
+                console.log('Syncing', pending.length, 'pending items...');
+            }
+        }
+    });
+}
+
+// Global online/offline indicator
+window.addEventListener('offline', () => {
+    showConnectionBadge('offline');
+});
+window.addEventListener('online', () => {
+    showConnectionBadge('online');
+});
+
+function showConnectionBadge(status) {
+    const existing = document.getElementById('connection-badge');
+    if (existing) existing.remove();
+
+    const badge = document.createElement('div');
+    badge.id = 'connection-badge';
+    badge.style.cssText = `
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        background: ${status === 'online' ? '#71dd37' : '#ff3e1d'};
+        color: white;
+        padding: 10px 24px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        animation: slideUp 0.3s ease;
+    `;
+    badge.innerHTML = status === 'online'
+        ? "<i class='bx bx-wifi'></i> Back Online — Syncing..."
+        : "<i class='bx bx-wifi-off'></i> You're Offline — Data saved locally";
+    document.body.appendChild(badge);
+
+    if (status === 'online') {
+        setTimeout(() => badge.remove(), 4000);
+    }
+}
+</script>
+
+<style>
+@keyframes slideUp {
+    from { opacity: 0; transform: translate(-50%, 20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+</style>
 
   </body>
 </html>

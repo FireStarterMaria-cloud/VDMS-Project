@@ -20,6 +20,10 @@ Route::get('/', function () {
     return view('landing');
 })->name('home');
 
+Route::get('/offline', function () {
+    return view('offline');
+})->name('offline');
+
 // ===================== BREEZE AUTH ROUTES =====================
 require __DIR__.'/auth.php';
 

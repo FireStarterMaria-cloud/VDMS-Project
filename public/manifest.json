@@ -1,0 +1,17 @@
+{
+    "name": "Velora VMS",
+    "short_name": "Velora",
+    "description": "Vehicle Dealer Management System",
+    "start_url": "/dashboard",
+    "display": "standalone",
+    "background_color": "#2b2c40",
+    "theme_color": "#696cff",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/assets/img/favicon/favicon.ico",
+            "sizes": "64x64",
+            "type": "image/x-icon"
+        }
+    ]
+}
