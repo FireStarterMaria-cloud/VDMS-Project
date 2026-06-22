@@ -13,7 +13,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('vehicles.update', $vehicle) }}" method="POST">
+                    <form action="{{ route('vehicles.update', $vehicle) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -81,13 +81,65 @@
                                        class="form-control" required>
                             </div>
 
+                            <div class="col-md-6 mb-3">
+    <label class="form-label">Purchase Date</label>
+    <input type="date" name="purchase_date" value="{{ old('purchase_date', $vehicle->purchase_date ?? '') }}" 
+           class="form-control" id="purchase_date">
+</div>
+
+<div class="col-md-6 mb-3">
+    <label class="form-label">Day</label>
+    <input type="text" name="purchase_day" id="purchase_day" 
+           value="{{ old('purchase_day', $vehicle->purchase_day ?? '') }}" 
+           class="form-control" readonly>
+</div>
+
+<div class="col-md-6 mb-3">
+    <label class="form-label">Profit / Loss Amount (Rs)</label>
+    <input type="number" name="profit_amount" step="0.01" 
+           value="{{ old('profit_amount', $vehicle->profit_amount ?? '') }}" 
+           class="form-control">
+</div>
+
+<div class="col-md-6 mb-3">
+    <label class="form-label">Profit Type</label>
+    <select name="profit_type" class="form-select">
+        <option value="">Select Type</option>
+        <option value="profit" {{ old('profit_type', $vehicle->profit_type ?? '') == 'profit' ? 'selected' : '' }}>Profit</option>
+        <option value="loss" {{ old('profit_type', $vehicle->profit_type ?? '') == 'loss' ? 'selected' : '' }}>Loss</option>
+        <option value="break_even" {{ old('profit_type', $vehicle->profit_type ?? '') == 'break_even' ? 'selected' : '' }}>Break Even</option>
+    </select>
+</div>
+
                             <!-- Description -->
                             <div class="col-12">
                                 <label class="form-label">Description</label>
                                 <textarea name="description" class="form-control" rows="4">{{ $vehicle->description }}</textarea>
                             </div>
                         </div>
+                            <hr>
+<h5 class="mb-3"><i class="bx bx-folder-open me-2"></i>Vehicle Documents</h5>
 
+@if($vehicle->documents->count() > 0)
+<div class="mb-3">
+    <label class="form-label">Existing Documents</label>
+    <ul class="list-group">
+        @foreach($vehicle->documents as $doc)
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank">
+                <i class="bx bx-file me-1"></i> {{ $doc->file_name }}
+            </a>
+            <span class="badge bg-label-secondary">{{ strtoupper($doc->file_type) }}</span>
+        </li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
+<div class="mb-3">
+    <label class="form-label">Upload New Documents</label>
+    <input type="file" name="documents[]" multiple class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+</div>
                         <div class="mt-4">
                             <button type="submit" class="btn btn-primary me-2">Update Vehicle</button>
                             <a href="{{ route('vehicles.index') }}" class="btn btn-secondary">Cancel</a>
@@ -98,4 +150,15 @@
         </div>
     </div>
 </div>
+
+
+<script>
+document.getElementById('purchase_date').addEventListener('change', function() {
+    if (this.value) {
+        const date = new Date(this.value);
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        document.getElementById('purchase_day').value = days[date.getDay()];
+    }
+});
+</script>
 @endsection

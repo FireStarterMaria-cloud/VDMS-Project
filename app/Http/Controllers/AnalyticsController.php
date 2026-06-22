@@ -40,9 +40,25 @@ class AnalyticsController extends Controller
         $recentSales = Sale::with(['vehicle', 'customer', 'branch'])
             ->latest()->take(10)->get();
 
+        // Monthly sales trend (last 6 months)
+        $monthlySales = Sale::select(
+            DB::raw("DATE_FORMAT(sale_date, '%b %Y') as month"),
+            DB::raw('COUNT(*) as count'),
+            DB::raw('SUM(final_price) as revenue')
+        )->where('sale_date', '>=', now()->subMonths(6))
+         ->groupBy(DB::raw("DATE_FORMAT(sale_date, '%Y-%m')"), 'month')
+         ->orderBy(DB::raw("DATE_FORMAT(sale_date, '%Y-%m')"))
+         ->get();
+
+        // Vehicle status distribution
+        $statusDistribution = Vehicle::select('status', DB::raw('COUNT(*) as count'))
+            ->groupBy('status')
+            ->get();
+
         return view('analytics.index', compact(
             'totalVehicles', 'totalSales', 'totalCustomers',
-            'totalRevenue', 'vehiclesByBranch', 'salesByBranch', 'recentSales'
+            'totalRevenue', 'vehiclesByBranch', 'salesByBranch', 'recentSales',
+            'monthlySales', 'statusDistribution'
         ));
     }
 }

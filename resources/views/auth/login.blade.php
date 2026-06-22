@@ -6,16 +6,13 @@
   <div class="card-body">
     <div class="app-brand justify-content-center mb-4">
       <a href="/" class="app-brand-link gap-2">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <circle cx="16" cy="16" r="16" fill="#EB0A1E"/>
-          <text x="16" y="22" text-anchor="middle" fill="white" font-size="14" font-weight="bold" font-family="Arial">T</text>
-        </svg>
-        <span class="app-brand-text demo fw-bolder ms-1">VDMS</span>
+        <img src="{{ asset('assets/img/logo/velora_logo.svg') }}" alt="Velora" style="height:36px;">
+<span class="app-brand-text demo fw-bolder ms-1">VELORA</span>
       </a>
     </div>
 
     <h4 class="mb-2">Welcome to VDMS! 👋</h4>
-    <p class="mb-4 text-muted">Toyota Dealer Management System</p>
+    <p class="mb-4 text-muted">Velora Vehicle Management System</p>
 
     @if(session('status'))
       <div class="alert alert-success mb-3">{{ session('status') }}</div>

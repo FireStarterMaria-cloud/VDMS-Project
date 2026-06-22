@@ -12,9 +12,13 @@ class Vehicle extends Model
 
     protected $fillable = [
         'branch_id', 'purchased_by', 'make', 'model', 'year',
-        'registration_no', 'chassis_no', 'engine_no', 'colour',
+        'registration_number', 'vin_number', 'colour',
         'variant', 'transmission', 'fuel_type', 'mileage',
-        'purchase_price', 'selling_price', 'status', 'description'
+        'purchase_price', 'selling_price', 'status', 'notes',
+        'engine_capacity', 'condition','profit_amount',          // ← New
+    'profit_type',            // ← New
+    'purchase_date',          // ← New
+    'purchase_day',
     ];
 
     protected $casts = [
@@ -23,7 +27,6 @@ class Vehicle extends Model
         'purchase_price' => 'decimal:2',
         'selling_price' => 'decimal:2',
         'status' => 'string',
-         
     ];
 
     public function branch()
@@ -38,7 +41,7 @@ class Vehicle extends Model
 
     public function images()
     {
-        return $this->hasMany(VehicleImage::class);
+        return $this->hasMany(VehicleImage::class)->orderBy('sort_order');
     }
 
     public function history()
@@ -64,5 +67,19 @@ class Vehicle extends Model
     public function qrCode()
     {
         return $this->hasOne(QrCode::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(VehicleDocument::class)->orderBy('sort_order');
+    }
+
+    /**
+     * Get QR Code for this vehicle
+     */
+    public function getQrCodeAttribute()
+    {
+        return \SimpleSoftwareIO\QrCode\Facades\QrCode::size(280)
+                    ->generate(route('vehicles.show', $this->id));
     }
 }

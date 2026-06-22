@@ -4,9 +4,14 @@
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4">
+   <div class="d-flex justify-content-between align-items-center py-3 mb-1">
+    <h4 class="fw-bold mb-0">
         <i class="bx bx-user me-2"></i> My Profile
     </h4>
+    <a href="{{ route('dashboard') }}" class="btn btn-secondary btn-sm">
+        <i class="bx bx-arrow-back"></i> Back to Dashboard
+    </a>
+</div>
 
     <div class="row">
         <!-- Profile Information -->

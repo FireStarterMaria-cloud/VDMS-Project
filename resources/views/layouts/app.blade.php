@@ -13,8 +13,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
-    <title>@yield('title', 'VDMS') | Toyota Dealer Management</title>
-
+    <title>@yield('title', 'Velora') | Vehicle Management System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -149,11 +148,11 @@
         </li>
         <li><div class="dropdown-divider"></div></li>
         <li>
-            <a class="dropdown-item" href="#">
-                <i class="bx bx-user me-2"></i>
-                <span class="align-middle">My Profile</span>
-            </a>
-        </li>
+    <a class="dropdown-item" href="{{ route('profile.edit') }}">
+        <i class="bx bx-user me-2"></i>
+        <span class="align-middle">My Profile</span>
+    </a>
+</li>
         <li><div class="dropdown-divider"></div></li>
         <li>
             <a class="dropdown-item text-danger" href="#"
@@ -189,7 +188,7 @@
             <footer class="content-footer footer bg-footer-theme">
               <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
                 <div class="mb-2 mb-md-0">
-                  &copy; {{ date('Y') }} <strong>VDMS</strong> &mdash; Toyota Dealer Management System
+                 &copy; {{ date('Y') }} <strong>Velora</strong> — Vehicle Management System
                 </div>
                 <div class="text-muted small">v1.0.0</div>
               </div>

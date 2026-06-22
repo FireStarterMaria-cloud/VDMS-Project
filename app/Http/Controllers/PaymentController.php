@@ -26,7 +26,7 @@ class PaymentController extends Controller
     public function create()
     {
         $user = Auth::user();
-        if ($user->isSalesStaff() || $user->isBranchManager()) abort(403);
+        if ($user->isSalesStaff()) abort(403);
 
         $sales = Sale::with('customer')->get();
         $branches = Branch::all();
@@ -36,7 +36,7 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        if ($user->isSalesStaff() || $user->isBranchManager()) abort(403);
+        if ($user->isSalesStaff()) abort(403);
 
         $validated = $request->validate([
             'sale_id'        => 'required|exists:sales,id',
@@ -71,7 +71,7 @@ class PaymentController extends Controller
     public function edit(Payment $payment)
     {
         $user = Auth::user();
-        if ($user->isSalesStaff() || $user->isBranchManager()) abort(403);
+        if ($user->isSalesStaff()) abort(403);
         $sales = Sale::all();
         $branches = Branch::all();
         return view('payments.edit', compact('payment', 'sales', 'branches'));
@@ -80,7 +80,7 @@ class PaymentController extends Controller
     public function update(Request $request, Payment $payment)
     {
         $user = Auth::user();
-        if ($user->isSalesStaff() || $user->isBranchManager()) abort(403);
+        if ($user->isSalesStaff()) abort(403);
 
         $validated = $request->validate([
             'sale_id'        => 'required|exists:sales,id',

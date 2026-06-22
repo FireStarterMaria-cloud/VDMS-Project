@@ -1,15 +1,12 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-    <div class="app-brand demo">
-        <a href="{{ route('dashboard') }}" class="app-brand-link">
-            <span class="app-brand-logo demo">
-                <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-                    <circle cx="13" cy="13" r="13" fill="#EB0A1E"/>
-                    <text x="13" y="18" text-anchor="middle" fill="white" font-size="11"
-                        font-weight="bold" font-family="Arial, sans-serif">T</text>
-                </svg>
-            </span>
-            <span class="app-brand-text demo menu-text fw-bolder ms-2">VDMS</span>
-        </a>
+   <div class="app-brand demo">
+    <a href="{{ route('dashboard') }}" class="app-brand-link">
+        <span class="app-brand-logo demo">
+            <img src="{{ asset('assets/img/logo/velora_logo.svg') }}"
+                 alt="Velora" style="height:28px;">
+        </span>
+        <span class="app-brand-text demo menu-text fw-bolder ms-2">VELORA</span>
+    </a>
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
             <i class="bx bx-chevron-left bx-sm align-middle"></i>
         </a>

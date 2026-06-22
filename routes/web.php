@@ -24,6 +24,9 @@ Route::get('/offline', function () {
     return view('offline');
 })->name('offline');
 
+Route::post('/invoices/{invoice}/send-email', [InvoiceController::class, 'sendEmail'])->name('invoices.send-email');
+Route::post('/invoices/{invoice}/send-approval', [InvoiceController::class, 'sendApproval'])->name('invoices.send-approval');
+
 // ===================== BREEZE AUTH ROUTES =====================
 require __DIR__.'/auth.php';
 
@@ -45,8 +48,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/{vehicle}/edit', [VehicleController::class, 'edit'])->name('edit');
         Route::put('/{vehicle}', [VehicleController::class, 'update'])->name('update');
         Route::delete('/{vehicle}', [VehicleController::class, 'destroy'])->name('destroy');
+
+
+
     });
 
+
+    Route::post('/vehicle-documents/{document}/verify', [VehicleController::class, 'verifyDocument'])->name('vehicle-documents.verify');
     // Sales
     Route::prefix('sales')->name('sales.')->group(function () {
         Route::get('/', [SalesController::class, 'index'])->name('index');
@@ -125,15 +133,15 @@ Route::middleware('auth')->group(function () {
     });
 
     // Branch Transfers
-    Route::prefix('branch-transfers')->name('branch-transfers.')->group(function () {
-        Route::get('/', [BranchTransferController::class, 'index'])->name('index');
-        Route::get('/create', [BranchTransferController::class, 'create'])->name('create');
-        Route::post('/', [BranchTransferController::class, 'store'])->name('store');
-        Route::get('/{branchTransfer}', [BranchTransferController::class, 'show'])->name('show');
-        Route::post('/{branchTransfer}/approve', [BranchTransferController::class, 'approve'])->name('branch-transfers.approve');
-        Route::post('/{branchTransfer}/reject', [BranchTransferController::class, 'reject'])->name('branch-transfers.reject');
-        Route::delete('/{branchTransfer}', [BranchTransferController::class, 'destroy'])->name('destroy');
-    });
+Route::prefix('branch-transfers')->name('branch-transfers.')->group(function () {
+    Route::get('/', [BranchTransferController::class, 'index'])->name('index');
+    Route::get('/create', [BranchTransferController::class, 'create'])->name('create');
+    Route::post('/', [BranchTransferController::class, 'store'])->name('store');
+    Route::get('/{branchTransfer}', [BranchTransferController::class, 'show'])->name('show');
+    Route::post('/{branchTransfer}/approve', [BranchTransferController::class, 'approve'])->name('approve');
+    Route::post('/{branchTransfer}/reject', [BranchTransferController::class, 'reject'])->name('reject');
+    Route::delete('/{branchTransfer}', [BranchTransferController::class, 'destroy'])->name('destroy');
+});
 
     // Analytics, Audit Logs, Settings
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');

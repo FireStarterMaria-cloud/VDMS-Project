@@ -42,49 +42,36 @@
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card">
-                <div class="card-header"><h5 class="mb-0">Vehicles by Branch</h5></div>
+                <div class="card-header"><h5 class="mb-0">Monthly Sales Trend</h5></div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr><th>Branch</th><th>Total</th><th>Available</th><th>Sold</th></tr>
-                            </thead>
-                            <tbody>
-                                @foreach($vehiclesByBranch as $row)
-                                <tr>
-                                    <td>{{ $row->city }}</td>
-                                    <td>{{ $row->total }}</td>
-                                    <td><span class="badge bg-success">{{ $row->available }}</span></td>
-                                    <td><span class="badge bg-danger">{{ $row->sold }}</span></td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                    <div id="monthlySalesChart"></div>
                 </div>
             </div>
         </div>
-
         <div class="col-md-6 mb-4">
             <div class="card">
-                <div class="card-header"><h5 class="mb-0">Sales by Branch</h5></div>
+                <div class="card-header"><h5 class="mb-0">Vehicle Status Distribution</h5></div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr><th>Branch</th><th>Sales</th><th>Revenue</th></tr>
-                            </thead>
-                            <tbody>
-                                @foreach($salesByBranch as $row)
-                                <tr>
-                                    <td>{{ $row->city }}</td>
-                                    <td>{{ $row->total_sales }}</td>
-                                    <td>Rs. {{ number_format($row->total_revenue) }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                    <div id="statusDonutChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header"><h5 class="mb-0">Vehicles by Branch</h5></div>
+                <div class="card-body">
+                    <div id="vehiclesBranchChart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header"><h5 class="mb-0">Revenue by Branch</h5></div>
+                <div class="card-body">
+                    <div id="revenueBranchChart"></div>
                 </div>
             </div>
         </div>
@@ -114,4 +101,57 @@
         </div>
     </div>
 </div>
+
+<script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
+<script>
+// Monthly Sales Trend (Line Chart)
+new ApexCharts(document.querySelector("#monthlySalesChart"), {
+    series: [{
+        name: 'Sales Count',
+        data: {!! json_encode($monthlySales->pluck('count')) !!}
+    }],
+    chart: { type: 'line', height: 280, toolbar: { show: false } },
+    colors: ['#696cff'],
+    stroke: { curve: 'smooth', width: 3 },
+    xaxis: { categories: {!! json_encode($monthlySales->pluck('month')) !!} },
+    grid: { borderColor: '#f0f0f0' }
+}).render();
+
+// Vehicle Status Distribution (Donut)
+new ApexCharts(document.querySelector("#statusDonutChart"), {
+    series: {!! json_encode($statusDistribution->pluck('count')) !!},
+    chart: { type: 'donut', height: 280 },
+    labels: {!! json_encode($statusDistribution->pluck('status')->map(fn($s) => ucfirst($s))) !!},
+    colors: ['#71dd37', '#ffab00', '#ff3e1d', '#696cff'],
+    legend: { position: 'bottom' }
+}).render();
+
+// Vehicles by Branch (Bar Chart)
+new ApexCharts(document.querySelector("#vehiclesBranchChart"), {
+    series: [{
+        name: 'Available',
+        data: {!! json_encode($vehiclesByBranch->pluck('available')) !!}
+    }, {
+        name: 'Sold',
+        data: {!! json_encode($vehiclesByBranch->pluck('sold')) !!}
+    }],
+    chart: { type: 'bar', height: 280, toolbar: { show: false }, stacked: true },
+    colors: ['#71dd37', '#ff3e1d'],
+    xaxis: { categories: {!! json_encode($vehiclesByBranch->pluck('city')) !!} },
+    plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } },
+    legend: { position: 'bottom' }
+}).render();
+
+// Revenue by Branch (Bar Chart)
+new ApexCharts(document.querySelector("#revenueBranchChart"), {
+    series: [{
+        name: 'Revenue (Rs.)',
+        data: {!! json_encode($salesByBranch->pluck('total_revenue')->map(fn($v) => $v ?? 0)) !!}
+    }],
+    chart: { type: 'bar', height: 280, toolbar: { show: false } },
+    colors: ['#03c3ec'],
+    xaxis: { categories: {!! json_encode($salesByBranch->pluck('city')) !!} },
+    plotOptions: { bar: { borderRadius: 4, columnWidth: '40%' } }
+}).render();
+</script>
 @endsection

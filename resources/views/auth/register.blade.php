@@ -6,7 +6,7 @@
 <div class="card">
   <div class="card-body">
     <h4 class="mb-2">Create Account</h4>
-    <p class="mb-4 text-muted">Join VDMS Team</p>
+    <p class="mb-4 text-muted">Join VMS Team</p>
 
     <form method="POST" action="{{ route('register') }}">
       @csrf

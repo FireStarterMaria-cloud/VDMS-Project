@@ -4,7 +4,7 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold"><i class="bx bx-file me-2"></i> Invoices</h4>
-        @if(auth()->user()->isHO() || auth()->user()->isAccountant())
+       @if(auth()->user()->isHO() || auth()->user()->isAccountant() || auth()->user()->isBranchManager())
         <a href="{{ route('invoices.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-2"></i> Create Invoice
         </a>
@@ -46,11 +46,11 @@
                                     <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-sm btn-icon text-info" title="View">
                                         <i class="bx bx-show fs-5"></i>
                                     </a>
-                                    @if(auth()->user()->isHO() || auth()->user()->isAccountant())
-                                    <a href="{{ route('invoices.edit', $invoice) }}" class="btn btn-sm btn-icon text-warning" title="Edit">
-                                        <i class="bx bx-edit fs-5"></i>
-                                    </a>
-                                    @endif
+                                @if(auth()->user()->isHO() || auth()->user()->isAccountant())
+<a href="{{ route('invoices.edit', $invoice) }}" class="btn btn-sm btn-icon text-warning" title="Edit">
+    <i class="bx bx-edit fs-5"></i>
+</a>
+@endif
                                     @if(auth()->user()->isHO())
                                     <form action="{{ route('invoices.destroy', $invoice) }}" method="POST" class="d-inline"
                                           onsubmit="return confirm('Delete this invoice?')">

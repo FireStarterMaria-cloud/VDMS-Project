@@ -10,12 +10,11 @@ class QrCode extends Model
     use HasFactory;
 
     protected $fillable = [
-        'vehicle_id', 'qr_code', 'barcode', 'qr_image_url'
+        'vehicle_id', 'qr_code', 'barcode', 'qr_image_url', 'generated_at'
     ];
 
     protected $casts = [
         'generated_at' => 'datetime',
-        'created_at' => 'datetime',
     ];
 
     public function vehicle()

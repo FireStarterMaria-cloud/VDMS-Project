@@ -12,7 +12,8 @@ class Invoice extends Model
     protected $fillable = [
         'sale_id', 'branch_id', 'generated_by', 'invoice_no',
         'subtotal', 'tax', 'discount', 'total_amount',
-        'currency', 'status', 'issue_date', 'due_date'
+        'currency', 'status', 'issue_date', 'due_date',
+        'needs_review', 'reviewed_by', 'reviewed_at'
     ];
 
     protected $casts = [
@@ -23,8 +24,8 @@ class Invoice extends Model
         'status' => 'string',
         'issue_date' => 'date',
         'due_date' => 'date',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'needs_review' => 'boolean',
+        'reviewed_at' => 'datetime',
     ];
 
     public function sale()
@@ -40,5 +41,10 @@ class Invoice extends Model
     public function generatedBy()
     {
         return $this->belongsTo(User::class, 'generated_by');
+    }
+
+    public function reviewedBy()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 }

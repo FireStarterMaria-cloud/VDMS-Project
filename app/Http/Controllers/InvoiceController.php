@@ -26,38 +26,45 @@ class InvoiceController extends Controller
     public function create()
     {
         $user = Auth::user();
-        if ($user->isSalesStaff() || $user->isBranchManager()) abort(403);
+        if ($user->isSalesStaff()) abort(403);
         $sales = Sale::with('customer')->get();
         $branches = Branch::all();
         return view('invoices.create', compact('sales', 'branches'));
     }
 
-    public function store(Request $request)
-    {
-        $user = Auth::user();
-        if ($user->isSalesStaff() || $user->isBranchManager()) abort(403);
+  public function store(Request $request)
+{
+    $user = Auth::user();
+    if ($user->isSalesStaff()) abort(403);
 
-        $validated = $request->validate([
-            'sale_id'      => 'required|exists:sales,id',
-            'branch_id'    => 'required|exists:branches,id',
-            'invoice_no'   => 'required|unique:invoices,invoice_no',
-            'subtotal'     => 'required|numeric|min:0',
-            'tax'          => 'nullable|numeric|min:0',
-            'discount'     => 'nullable|numeric|min:0',
-            'total_amount' => 'required|numeric|min:0',
-            'currency'     => 'nullable|string|max:10',
-            'status'       => 'required|in:draft,issued,paid,cancelled',
-            'issue_date'   => 'required|date',
-            'due_date'     => 'nullable|date',
-        ]);
+    $validated = $request->validate([
+        'sale_id'      => 'required|exists:sales,id',
+        'branch_id'    => 'required|exists:branches,id',
+        'invoice_no'   => 'required|unique:invoices,invoice_no',
+        'subtotal'     => 'required|numeric|min:0',
+        'tax'          => 'nullable|numeric|min:0',
+        'discount'     => 'nullable|numeric|min:0',
+        'total_amount' => 'required|numeric|min:0',
+        'currency'     => 'nullable|string|max:10',
+        'status'       => 'required|in:draft,issued,paid,cancelled',
+        'issue_date'   => 'required|date',
+        'due_date'     => 'nullable|date',
+    ]);
 
-        $validated['generated_by'] = $user->id;
-        $validated['currency'] = $validated['currency'] ?? 'PKR';
+    $validated['generated_by'] = $user->id;
+    $validated['currency'] = $validated['currency'] ?? 'PKR';
+    $validated['needs_review'] = $request->has('send_to_admin') ? true : false;
 
-        Invoice::create($validated);
-        return redirect()->route('invoices.index')
-            ->with('success', 'Invoice created successfully!');
+    $invoice = Invoice::create($validated);
+
+    $message = 'Invoice created successfully!';
+    if ($validated['needs_review']) {
+        $message .= ' Sent to admin for review.';
     }
+
+    return redirect()->route('invoices.show', $invoice)
+        ->with('success', $message);
+}
 
     public function show(Invoice $invoice)
     {
@@ -70,7 +77,7 @@ class InvoiceController extends Controller
     public function edit(Invoice $invoice)
     {
         $user = Auth::user();
-        if ($user->isSalesStaff() || $user->isBranchManager()) abort(403);
+        if ($user->isSalesStaff()) abort(403);
         $sales = Sale::all();
         $branches = Branch::all();
         return view('invoices.edit', compact('invoice', 'sales', 'branches'));
@@ -79,7 +86,7 @@ class InvoiceController extends Controller
     public function update(Request $request, Invoice $invoice)
     {
         $user = Auth::user();
-        if ($user->isSalesStaff() || $user->isBranchManager()) abort(403);
+        if ($user->isSalesStaff()) abort(403);
 
         $validated = $request->validate([
             'sale_id'      => 'required|exists:sales,id',
@@ -106,4 +113,24 @@ class InvoiceController extends Controller
         return redirect()->route('invoices.index')
             ->with('success', 'Invoice deleted successfully!');
     }
+
+   public function sendEmail(\App\Models\Invoice $invoice)
+{
+    $customerEmail = $invoice->sale->customer->email ?? null;
+
+    if (!$customerEmail) {
+        return redirect()->back()->with('error', 'Customer does not have an email address.');
+    }
+
+    \Illuminate\Support\Facades\Mail::to($customerEmail)
+        ->send(new \App\Mail\InvoiceMail($invoice));
+
+    return redirect()->back()->with('success', 'Invoice emailed to ' . $customerEmail . ' successfully!');
+}
+
+public function sendApproval(\App\Models\Invoice $invoice)
+{
+    $invoice->update(['needs_review' => true]);
+    return redirect()->back()->with('success', 'Invoice flagged for HO review. Customer can still receive it normally.');
+}
 }

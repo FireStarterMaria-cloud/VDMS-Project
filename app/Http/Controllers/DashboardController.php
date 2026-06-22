@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Vehicle;
 use App\Models\Branch;
 use App\Models\User;
+use App\Models\Sale;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -12,10 +13,8 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-
         $query = Vehicle::with('branch');
 
-        // Branch restriction
         if (!$user->isSuperAdmin() && !$user->isHOAdmin()) {
             $query->where('branch_id', $user->branch_id);
         }
@@ -28,11 +27,25 @@ class DashboardController extends Controller
             'total_users'      => User::count(),
         ];
 
-        $recentVehicles = $query->with('branch')
-                                ->latest()
-                                ->take(5)
-                                ->get();
+        $recentVehicles = $query->with('branch')->latest()->take(5)->get();
 
-        return view('dashboard.index', compact('stats', 'recentVehicles'));
+        $salesQuery = Sale::with(['customer', 'vehicle']);
+        if (!$user->isSuperAdmin() && !$user->isHOAdmin()) {
+            $salesQuery->where('branch_id', $user->branch_id);
+        }
+
+        $recentSales = $salesQuery->latest()->take(5)->get();
+
+        $needsReviewInvoices = collect();
+if ($user->isHO()) {
+    $needsReviewInvoices = \App\Models\Invoice::with(['sale.customer', 'branch'])
+        ->where('needs_review', true)
+        ->latest()
+        ->take(5)
+        ->get();
+}
+        $totalRevenue = (clone $salesQuery)->where('status', 'completed')->sum('final_price');
+
+        return view('dashboard.index', compact('stats', 'recentVehicles', 'recentSales', 'needsReviewInvoices' ,  'totalRevenue'));
     }
 }

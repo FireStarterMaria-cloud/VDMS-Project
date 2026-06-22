@@ -6,9 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class AuditLog extends Model
 {
+    public $timestamps = false;
+
     protected $fillable = [
-        'user_id', 'branch_id', 'action',
-        'model_type', 'model_id', 'old_values', 'new_values', 'ip_address',
+        'user_id',
+        'branch_id',
+        'action',
+        'model_type',
+        'model_id',
+        'old_values',
+        'new_values',
+        'ip_address',
+        'user_agent',
+        'performed_at',
     ];
 
     public function user()
