@@ -7,15 +7,26 @@ use App\Models\Vehicle;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\ShowroomScoped;
 
 class BranchTransferController extends Controller
 {
+    use ShowroomScoped;
+
     public function index(Request $request)
     {
         $user = Auth::user();
         $query = BranchTransfer::with(['vehicle', 'fromBranch', 'toBranch', 'requestedBy']);
 
-        if (!$user->isHO()) {
+        if ($user->isChairwoman()) {
+            // sab transfers
+        } elseif ($user->isSuperAdmin() || $user->isHOAdmin()) {
+            $branchIds = $this->getBranches()->pluck('id');
+            $query->where(function($q) use ($branchIds) {
+                $q->whereIn('from_branch_id', $branchIds)
+                  ->orWhereIn('to_branch_id', $branchIds);
+            });
+        } else {
             $query->where(function($q) use ($user) {
                 $q->where('from_branch_id', $user->branch_id)
                   ->orWhere('to_branch_id', $user->branch_id);
@@ -35,8 +46,11 @@ class BranchTransferController extends Controller
         $user = Auth::user();
         if ($user->isSalesStaff() || $user->isAccountant()) abort(403);
 
-        $vehicles = Vehicle::where('status', 'available')->get();
-        $branches = Branch::all();
+        $vehicleQuery = Vehicle::where('status', 'available');
+        $this->applyShowroomScope($vehicleQuery);
+        $vehicles = $vehicleQuery->get();
+
+        $branches = $this->getBranches();
         return view('branch-transfers.create', compact('vehicles', 'branches'));
     }
 
@@ -57,9 +71,7 @@ class BranchTransferController extends Controller
         $validated['status'] = 'pending';
 
         BranchTransfer::create($validated);
-
-        return redirect()->route('branch-transfers.index')
-            ->with('success', 'Transfer request submitted!');
+        return redirect()->route('branch-transfers.index')->with('success', 'Transfer request submitted!');
     }
 
     public function show(BranchTransfer $branchTransfer)
@@ -70,7 +82,8 @@ class BranchTransferController extends Controller
 
     public function approve(BranchTransfer $branchTransfer)
     {
-        if (!Auth::user()->isHO()) abort(403);
+        $user = Auth::user();
+        if (!$user->isHO() && !$user->isChairwoman()) abort(403);
 
         $branchTransfer->update([
             'status'        => 'approved',
@@ -81,28 +94,27 @@ class BranchTransferController extends Controller
         Vehicle::where('id', $branchTransfer->vehicle_id)
             ->update(['branch_id' => $branchTransfer->to_branch_id, 'status' => 'transferred']);
 
-        return redirect()->route('branch-transfers.index')
-            ->with('success', 'Transfer approved!');
+        return redirect()->route('branch-transfers.index')->with('success', 'Transfer approved!');
     }
 
     public function reject(BranchTransfer $branchTransfer)
     {
-        if (!Auth::user()->isHO()) abort(403);
+        $user = Auth::user();
+        if (!$user->isHO() && !$user->isChairwoman()) abort(403);
 
         $branchTransfer->update([
             'status'      => 'rejected',
             'approved_by' => Auth::id(),
         ]);
 
-        return redirect()->route('branch-transfers.index')
-            ->with('success', 'Transfer rejected!');
+        return redirect()->route('branch-transfers.index')->with('success', 'Transfer rejected!');
     }
 
     public function destroy(BranchTransfer $branchTransfer)
     {
-        if (!Auth::user()->isHO()) abort(403);
+        $user = Auth::user();
+        if (!$user->isHO() && !$user->isChairwoman()) abort(403);
         $branchTransfer->delete();
-        return redirect()->route('branch-transfers.index')
-            ->with('success', 'Transfer deleted!');
+        return redirect()->route('branch-transfers.index')->with('success', 'Transfer deleted!');
     }
 }

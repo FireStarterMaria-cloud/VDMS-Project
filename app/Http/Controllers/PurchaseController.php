@@ -7,20 +7,25 @@ use App\Models\Vehicle;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\ShowroomScoped;
 
 class PurchaseController extends Controller
 {
+    use ShowroomScoped;
+
     public function index(Request $request)
     {
         $user = Auth::user();
         $query = Purchase::with(['vehicle', 'branch', 'purchasedBy']);
 
-        if (!$user->isHO()) {
-            $query->where('branch_id', $user->branch_id);
+        $this->applyShowroomScope($query);
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
         }
 
         $purchases = $query->latest()->paginate(15);
-        $branches = $user->isHO() ? Branch::all() : collect();
+        $branches = $this->getBranches();
 
         return view('purchases.index', compact('purchases', 'branches'));
     }
@@ -30,8 +35,11 @@ class PurchaseController extends Controller
         $user = Auth::user();
         if ($user->isSalesStaff()) abort(403);
 
-        $vehicles = Vehicle::where('status', 'available')->get();
-        $branches = Branch::all();
+        $vehicleQuery = Vehicle::where('status', 'available');
+        $this->applyShowroomScope($vehicleQuery);
+        $vehicles = $vehicleQuery->get();
+
+        $branches = $this->getBranches();
         return view('purchases.create', compact('vehicles', 'branches'));
     }
 
@@ -55,14 +63,13 @@ class PurchaseController extends Controller
         $validated['purchased_by'] = $user->id;
         Purchase::create($validated);
 
-        return redirect()->route('purchases.index')
-            ->with('success', 'Purchase recorded successfully!');
+        return redirect()->route('purchases.index')->with('success', 'Purchase recorded successfully!');
     }
 
     public function show(Purchase $purchase)
     {
         $user = Auth::user();
-        if (!$user->isHO() && $purchase->branch_id !== $user->branch_id) abort(403);
+        if (!$user->isChairwoman() && !$user->canAccessBranch($purchase->branch_id)) abort(403);
         $purchase->load(['vehicle', 'branch', 'purchasedBy']);
         return view('purchases.show', compact('purchase'));
     }
@@ -71,9 +78,13 @@ class PurchaseController extends Controller
     {
         $user = Auth::user();
         if ($user->isSalesStaff()) abort(403);
-        if (!$user->isHO() && $purchase->branch_id !== $user->branch_id) abort(403);
-        $vehicles = Vehicle::all();
-        $branches = Branch::all();
+        if (!$user->isChairwoman() && !$user->canAccessBranch($purchase->branch_id)) abort(403);
+
+        $vehicleQuery = Vehicle::query();
+        $this->applyShowroomScope($vehicleQuery);
+        $vehicles = $vehicleQuery->get();
+
+        $branches = $this->getBranches();
         return view('purchases.edit', compact('purchase', 'vehicles', 'branches'));
     }
 
@@ -95,15 +106,14 @@ class PurchaseController extends Controller
         ]);
 
         $purchase->update($validated);
-        return redirect()->route('purchases.index')
-            ->with('success', 'Purchase updated successfully!');
+        return redirect()->route('purchases.index')->with('success', 'Purchase updated successfully!');
     }
 
     public function destroy(Purchase $purchase)
     {
-        if (!Auth::user()->isHO()) abort(403);
+        $user = Auth::user();
+        if (!$user->isHO() && !$user->isChairwoman()) abort(403);
         $purchase->delete();
-        return redirect()->route('purchases.index')
-            ->with('success', 'Purchase deleted successfully!');
+        return redirect()->route('purchases.index')->with('success', 'Purchase deleted successfully!');
     }
 }

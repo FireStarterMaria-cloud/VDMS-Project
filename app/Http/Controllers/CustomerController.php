@@ -6,17 +6,18 @@ use App\Models\Customer;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\ShowroomScoped;
 
 class CustomerController extends Controller
 {
+    use ShowroomScoped;
+
     public function index(Request $request)
     {
         $user = Auth::user();
         $query = Customer::with('branch');
 
-        if (!$user->isHO()) {
-            $query->where('branch_id', $user->branch_id);
-        }
+        $this->applyShowroomScope($query);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -27,8 +28,12 @@ class CustomerController extends Controller
             });
         }
 
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
         $customers = $query->latest()->paginate(15);
-        $branches = $user->isHO() ? Branch::all() : collect();
+        $branches = $this->getBranches();
 
         return view('customers.index', compact('customers', 'branches'));
     }
@@ -36,19 +41,15 @@ class CustomerController extends Controller
     public function create()
     {
         $user = Auth::user();
-        if ($user->isAccountant()) {
-            abort(403);
-        }
-        $branches = Branch::all();
+        if ($user->isAccountant()) abort(403);
+        $branches = $this->getBranches();
         return view('customers.create', compact('branches'));
     }
 
     public function store(Request $request)
     {
         $user = Auth::user();
-        if ($user->isAccountant()) {
-            abort(403);
-        }
+        if ($user->isAccountant()) abort(403);
 
         $validated = $request->validate([
             'branch_id' => 'required|exists:branches,id',
@@ -62,17 +63,13 @@ class CustomerController extends Controller
         ]);
 
         Customer::create($validated);
-
-        return redirect()->route('customers.index')
-            ->with('success', 'Customer added successfully!');
+        return redirect()->route('customers.index')->with('success', 'Customer added successfully!');
     }
 
     public function show(Customer $customer)
     {
         $user = Auth::user();
-        if (!$user->isHO() && $customer->branch_id !== $user->branch_id) {
-            abort(403);
-        }
+        if (!$user->isChairwoman() && !$user->canAccessBranch($customer->branch_id)) abort(403);
         $customer->load(['branch', 'sales']);
         return view('customers.show', compact('customer'));
     }
@@ -80,22 +77,16 @@ class CustomerController extends Controller
     public function edit(Customer $customer)
     {
         $user = Auth::user();
-        if ($user->isAccountant()) {
-            abort(403);
-        }
-        if (!$user->isHO() && $customer->branch_id !== $user->branch_id) {
-            abort(403);
-        }
-        $branches = Branch::all();
+        if ($user->isAccountant()) abort(403);
+        if (!$user->isChairwoman() && !$user->canAccessBranch($customer->branch_id)) abort(403);
+        $branches = $this->getBranches();
         return view('customers.edit', compact('customer', 'branches'));
     }
 
     public function update(Request $request, Customer $customer)
     {
         $user = Auth::user();
-        if ($user->isAccountant()) {
-            abort(403);
-        }
+        if ($user->isAccountant()) abort(403);
 
         $validated = $request->validate([
             'branch_id' => 'required|exists:branches,id',
@@ -109,19 +100,14 @@ class CustomerController extends Controller
         ]);
 
         $customer->update($validated);
-
-        return redirect()->route('customers.index')
-            ->with('success', 'Customer updated successfully!');
+        return redirect()->route('customers.index')->with('success', 'Customer updated successfully!');
     }
 
     public function destroy(Customer $customer)
     {
         $user = Auth::user();
-        if (!$user->isHO()) {
-            abort(403);
-        }
+        if (!$user->isHO() && !$user->isChairwoman()) abort(403);
         $customer->delete();
-        return redirect()->route('customers.index')
-            ->with('success', 'Customer deleted successfully!');
+        return redirect()->route('customers.index')->with('success', 'Customer deleted successfully!');
     }
 }

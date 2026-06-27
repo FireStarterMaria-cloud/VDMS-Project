@@ -23,6 +23,15 @@
             </a>
         </li>
 
+        @if(auth()->user()->isChairwoman())
+<li class="menu-item {{ request()->is('showrooms*') ? 'active' : '' }}">
+    <a href="{{ route('showrooms.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-buildings"></i>
+        <div>Showrooms</div>
+    </a>
+</li>
+@endif
+
         <li class="menu-item {{ request()->routeIs('vehicles.*') ? 'active' : '' }}">
             <a href="{{ route('vehicles.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-car"></i>

@@ -232,8 +232,7 @@
                             <tr><th>Branch</th><th>Vehicles</th><th>Available</th></tr>
                         </thead>
                         <tbody>
-                            @foreach(\App\Models\Branch::withCount(['vehicles', 'vehicles as available_count' => function($q) { $q->where('status', 'available'); }])->get() as $b)
-                            <tr>
+                           @foreach(\App\Models\Branch::withCount(['vehicles', 'vehicles as available_count' => function($q) { $q->where('status', 'available'); }])->when(!auth()->user()->isChairwoman(), function($q) { $q->where('showroom_id', auth()->user()->showroom_id); })->get() as $b)
                                 <td>{{ $b->city }}</td>
                                 <td>{{ $b->vehicles_count }}</td>
                                 <td><span class="badge bg-{{ $b->available_count < 3 ? 'danger' : 'success' }}">{{ $b->available_count }}</span></td>

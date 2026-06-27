@@ -14,6 +14,12 @@
         </div>
 
         <ul class="navbar-nav flex-row align-items-center ms-auto">
+            {{-- Dark/Light Toggle --}}
+<li class="nav-item me-2">
+    <a class="nav-link" href="javascript:void(0);" id="themeToggle" title="Toggle Theme">
+        <i class="bx bx-moon bx-sm" id="themeIcon"></i>
+    </a>
+</li>
             <!-- User Dropdown -->
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="#" data-bs-toggle="dropdown">

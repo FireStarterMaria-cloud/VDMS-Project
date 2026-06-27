@@ -7,20 +7,27 @@ use App\Models\Sale;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\ShowroomScoped;
 
 class PaymentController extends Controller
 {
+    use ShowroomScoped;
+
     public function index(Request $request)
     {
         $user = Auth::user();
         $query = Payment::with(['sale', 'branch', 'receivedBy']);
 
-        if (!$user->isHO()) {
-            $query->where('branch_id', $user->branch_id);
+        $this->applyShowroomScope($query);
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
         }
 
         $payments = $query->latest()->paginate(15);
-        return view('payments.index', compact('payments'));
+        $branches = $this->getBranches();
+
+        return view('payments.index', compact('payments', 'branches'));
     }
 
     public function create()
@@ -28,8 +35,11 @@ class PaymentController extends Controller
         $user = Auth::user();
         if ($user->isSalesStaff()) abort(403);
 
-        $sales = Sale::with('customer')->get();
-        $branches = Branch::all();
+        $salesQuery = Sale::with('customer');
+        $this->applyShowroomScope($salesQuery);
+        $sales = $salesQuery->get();
+
+        $branches = $this->getBranches();
         return view('payments.create', compact('sales', 'branches'));
     }
 
@@ -56,14 +66,13 @@ class PaymentController extends Controller
         $validated['exchange_rate'] = $validated['exchange_rate'] ?? 1;
 
         Payment::create($validated);
-        return redirect()->route('payments.index')
-            ->with('success', 'Payment recorded successfully!');
+        return redirect()->route('payments.index')->with('success', 'Payment recorded successfully!');
     }
 
     public function show(Payment $payment)
     {
         $user = Auth::user();
-        if (!$user->isHO() && $payment->branch_id !== $user->branch_id) abort(403);
+        if (!$user->isChairwoman() && !$user->canAccessBranch($payment->branch_id)) abort(403);
         $payment->load(['sale', 'branch', 'receivedBy']);
         return view('payments.show', compact('payment'));
     }
@@ -72,8 +81,13 @@ class PaymentController extends Controller
     {
         $user = Auth::user();
         if ($user->isSalesStaff()) abort(403);
-        $sales = Sale::all();
-        $branches = Branch::all();
+        if (!$user->isChairwoman() && !$user->canAccessBranch($payment->branch_id)) abort(403);
+
+        $salesQuery = Sale::with('customer');
+        $this->applyShowroomScope($salesQuery);
+        $sales = $salesQuery->get();
+
+        $branches = $this->getBranches();
         return view('payments.edit', compact('payment', 'sales', 'branches'));
     }
 
@@ -94,15 +108,14 @@ class PaymentController extends Controller
         ]);
 
         $payment->update($validated);
-        return redirect()->route('payments.index')
-            ->with('success', 'Payment updated successfully!');
+        return redirect()->route('payments.index')->with('success', 'Payment updated successfully!');
     }
 
     public function destroy(Payment $payment)
     {
-        if (!Auth::user()->isHO()) abort(403);
+        $user = Auth::user();
+        if (!$user->isHO() && !$user->isChairwoman()) abort(403);
         $payment->delete();
-        return redirect()->route('payments.index')
-            ->with('success', 'Payment deleted successfully!');
+        return redirect()->route('payments.index')->with('success', 'Payment deleted successfully!');
     }
 }

@@ -1,15 +1,24 @@
 @extends('layouts.app')
 @section('title', 'Sales')
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold"><i class="bx bx-receipt me-2"></i> Sales</h4>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="bx bx-receipt me-2"></i> Sales Management
+    </h4>
+    <div class="d-flex gap-2">
+        <a href="{{ route('pdf.sales') }}" 
+           class="btn btn-sm"
+           target="_blank"
+           style="background:#696cff; color:#fff; border:none;">
+            <i class="bx bx-file-pdf me-1"></i> Download PDF
+        </a>
         @if(!auth()->user()->isAccountant())
-        <a href="{{ route('sales.create') }}" class="btn btn-primary">
-            <i class="bx bx-plus me-2"></i> Add New Sale
+        <a href="{{ route('sales.create') }}" class="btn btn-primary btn-sm">
+            <i class="bx bx-plus me-1"></i> New Sale
         </a>
         @endif
     </div>
+</div>
 
     @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>

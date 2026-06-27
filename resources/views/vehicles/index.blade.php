@@ -3,17 +3,24 @@
 @section('title', 'Vehicles Management')
 
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold">
-            <i class="bx bx-car me-2"></i> Vehicles Management
-        </h4>
-        @if(auth()->user()->isSuperAdmin() || auth()->user()->isHOAdmin() || auth()->user()->isBranchManager())
-<a href="{{ route('vehicles.create') }}" class="btn btn-primary">
-    <i class="bx bx-plus me-2"></i> Add New Vehicle
-</a>
-@endif
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="bx bx-car me-2"></i> Vehicles Management
+    </h4>
+    <div class="d-flex gap-2">
+        <a href="{{ route('pdf.vehicles') }}" 
+           class="btn btn-sm" 
+           target="_blank"
+           style="background:#696cff; color:#fff; border:none;">
+            <i class="bx bx-file-pdf me-1"></i> Download PDF
+        </a>
+        @if(!auth()->user()->isAccountant())
+        <a href="{{ route('vehicles.create') }}" class="btn btn-primary btn-sm">
+            <i class="bx bx-plus me-1"></i> Add New Vehicle
+        </a>
+        @endif
     </div>
+</div>
 
     <!-- Search & Filters -->
     <div class="card mb-4">

@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum Role: string
 {
+    case CHAIRWOMAN     = 'chairwoman';
     case SUPERADMIN     = 'superadmin';
     case HO_ADMIN       = 'ho_admin';
     case BRANCH_MANAGER = 'branch_manager';
@@ -13,16 +14,12 @@ enum Role: string
     public function label(): string
     {
         return match($this) {
-            self::SUPERADMIN     => 'Super Admin',
-            self::HO_ADMIN       => 'Head Office Admin',
-            self::BRANCH_MANAGER => 'Branch Manager',
-            self::SALES_STAFF    => 'Sales Staff',
-            self::ACCOUNTANT     => 'Accountant',
+            Role::CHAIRWOMAN     => 'Chairwoman',
+            Role::SUPERADMIN     => 'Super Admin',
+            Role::HO_ADMIN       => 'HO Admin',
+            Role::BRANCH_MANAGER => 'Branch Manager',
+            Role::SALES_STAFF    => 'Sales Staff',
+            Role::ACCOUNTANT     => 'Accountant',
         };
-    }
-
-    public function isAdmin(): bool
-    {
-        return in_array($this, [self::SUPERADMIN, self::HO_ADMIN]);
     }
 }

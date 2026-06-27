@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ShowroomController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\SalesController;
@@ -27,6 +28,8 @@ Route::get('/offline', function () {
 Route::post('/invoices/{invoice}/send-email', [InvoiceController::class, 'sendEmail'])->name('invoices.send-email');
 Route::post('/invoices/{invoice}/send-approval', [InvoiceController::class, 'sendApproval'])->name('invoices.send-approval');
 
+Route::get('/company', [App\Http\Controllers\CompanyController::class, 'index'])->name('company.index');
+
 // ===================== BREEZE AUTH ROUTES =====================
 require __DIR__.'/auth.php';
 
@@ -38,6 +41,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+// Showrooms (Chairwoman only)
+Route::prefix('showrooms')->name('showrooms.')->group(function () {
+    Route::get('/', [ShowroomController::class, 'index'])->name('index');
+    Route::get('/create', [ShowroomController::class, 'create'])->name('create');
+    Route::post('/', [ShowroomController::class, 'store'])->name('store');
+    Route::get('/{showroom}', [ShowroomController::class, 'show'])->name('show');
+    Route::get('/{showroom}/edit', [ShowroomController::class, 'edit'])->name('edit');
+    Route::put('/{showroom}', [ShowroomController::class, 'update'])->name('update');
+    Route::delete('/{showroom}', [ShowroomController::class, 'destroy'])->name('destroy');
+});
+
+// Investor Page
+Route::get('/investor', function() { return view('investor'); })->name('investor');
+
+
 
     // Vehicles
     Route::prefix('vehicles')->name('vehicles.')->group(function () {
@@ -52,6 +71,10 @@ Route::middleware('auth')->group(function () {
 
 
     });
+
+
+    Route::get('/pdf/vehicles', [App\Http\Controllers\PdfController::class, 'vehiclesPdf'])->name('pdf.vehicles');
+Route::get('/pdf/sales', [App\Http\Controllers\PdfController::class, 'salesPdf'])->name('pdf.sales');
 
 
     Route::post('/vehicle-documents/{document}/verify', [VehicleController::class, 'verifyDocument'])->name('vehicle-documents.verify');
@@ -147,5 +170,16 @@ Route::prefix('branch-transfers')->name('branch-transfers.')->group(function () 
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+
+
+    Route::post('/notifications/read-all', function() {
+    \App\Models\Notification::where('user_id', auth()->id())->update(['is_read' => true]);
+    return redirect()->back();
+})->name('notifications.readAll');
+
+Route::post('/notifications/{notification}/read', function(\App\Models\Notification $notification) {
+    $notification->update(['is_read' => true]);
+    return response()->json(['success' => true]);
+})->name('notifications.read');
 
 });

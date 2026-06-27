@@ -18,6 +18,7 @@ class User extends Authenticatable
         'password',
         'role',
         'branch_id',
+        'showroom_id',
         'phone',
         'profile_picture',
         'is_active',
@@ -38,7 +39,17 @@ class User extends Authenticatable
         return $this->belongsTo(Branch::class);
     }
 
+    public function showroom()
+    {
+        return $this->belongsTo(Showroom::class);
+    }
+
     // ===== Role Helper Methods =====
+    public function isChairwoman(): bool
+    {
+        return $this->role === Role::CHAIRWOMAN;
+    }
+
     public function isSuperAdmin(): bool
     {
         return $this->role === Role::SUPERADMIN;
@@ -66,19 +77,25 @@ class User extends Authenticatable
 
     public function isHO(): bool
     {
-        return $this->isSuperAdmin() || $this->isHOAdmin();
+        return $this->isChairwoman() || $this->isSuperAdmin() || $this->isHOAdmin();
     }
 
     public function canManageAllBranches(): bool
     {
-        return $this->isSuperAdmin() || $this->isHOAdmin();
+        return $this->isChairwoman() || $this->isSuperAdmin() || $this->isHOAdmin();
     }
 
     public function canAccessBranch(int $branchId): bool
-{
-    if ($this->isSuperAdmin() || $this->isHOAdmin()) {
-        return true;
+    {
+        if ($this->isChairwoman() || $this->isSuperAdmin() || $this->isHOAdmin()) {
+            return true;
+        }
+        return $this->branch_id === $branchId;
     }
-    return $this->branch_id === $branchId;
-}
+
+    public function canAccessShowroom(int $showroomId): bool
+    {
+        if ($this->isChairwoman()) return true;
+        return $this->showroom_id === $showroomId;
+    }
 }
