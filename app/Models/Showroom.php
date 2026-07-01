@@ -8,7 +8,7 @@ class Showroom extends Model
 {
     protected $fillable = [
         'name', 'city', 'country', 'address',
-        'phone', 'email', 'logo', 'is_active'
+        'phone', 'email', 'logo', 'theme_color', 'is_active'
     ];
 
     protected $casts = [

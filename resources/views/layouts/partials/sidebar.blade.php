@@ -23,12 +23,32 @@
             </a>
         </li>
 
-        @if(auth()->user()->isChairwoman())
-<li class="menu-item {{ request()->is('showrooms*') ? 'active' : '' }}">
-    <a href="{{ route('showrooms.index') }}" class="menu-link">
+      @if(auth()->user()->isChairwoman())
+<li class="menu-item {{ request()->routeIs('showrooms.*') || request()->routeIs('company.*') || request()->is('investor') ? 'open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-buildings"></i>
+        <div>Company</div>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item {{ request()->routeIs('showrooms.index') || request()->routeIs('showrooms.create') || request()->routeIs('showrooms.edit') ? 'active' : '' }}">
+    <a href="{{ route('showrooms.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-building-house"></i>
         <div>Showrooms</div>
     </a>
+</li>
+       <li class="menu-item {{ request()->routeIs('investment-inquiries.*') ? 'active' : '' }}">
+    <a href="{{ route('investment-inquiries.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-line-chart"></i>
+        <div>Investors</div>
+    </a>
+</li>
+       <li class="menu-item {{ request()->routeIs('showrooms.overview') ? 'active' : '' }}">
+    <a href="{{ route('showrooms.overview') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-globe"></i>
+        <div>White Cells</div>
+    </a>
+</li>
+    </ul>
 </li>
 @endif
 

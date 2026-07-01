@@ -129,11 +129,12 @@ class VehicleController extends Controller
             foreach ($request->file('documents') as $index => $file) {
                 $path = $file->store('vehicle-documents', 'public');
                 \App\Models\VehicleDocument::create([
-                    'vehicle_id' => $vehicle->id,
-                    'file_path'  => $path,
-                    'file_name'  => $file->getClientOriginalName(),
-                    'file_type'  => $file->getClientOriginalExtension(),
-                    'sort_order' => $index,
+                    'vehicle_id'  => $vehicle->id,
+                    'uploaded_by' => $user->id,
+                    'file_path'   => $path,
+                    'file_name'   => $file->getClientOriginalName(),
+                    'file_type'   => $file->getClientOriginalExtension(),
+                    'sort_order'  => $index,
                 ]);
             }
         }
@@ -148,7 +149,11 @@ class VehicleController extends Controller
         if (!$user->canAccessBranch($vehicle->branch_id)) {
             abort(403, 'You cannot access vehicles from other branches.');
         }
-        return view('vehicles.show', compact('vehicle'));
+
+        $vehicle->load('documents.uploadedBy');
+        $visibleDocuments = $vehicle->documents->filter(fn($doc) => $doc->isVisibleTo($user))->values();
+
+        return view('vehicles.show', compact('vehicle', 'visibleDocuments'));
     }
 
     public function edit(Vehicle $vehicle)
@@ -216,11 +221,12 @@ class VehicleController extends Controller
             foreach ($request->file('documents') as $index => $file) {
                 $path = $file->store('vehicle-documents', 'public');
                 \App\Models\VehicleDocument::create([
-                    'vehicle_id' => $vehicle->id,
-                    'file_path'  => $path,
-                    'file_name'  => $file->getClientOriginalName(),
-                    'file_type'  => $file->getClientOriginalExtension(),
-                    'sort_order' => $existingCount + $index,
+                    'vehicle_id'  => $vehicle->id,
+                    'uploaded_by' => $user->id,
+                    'file_path'   => $path,
+                    'file_name'   => $file->getClientOriginalName(),
+                    'file_type'   => $file->getClientOriginalExtension(),
+                    'sort_order'  => $existingCount + $index,
                 ]);
             }
         }

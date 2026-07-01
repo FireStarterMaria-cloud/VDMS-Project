@@ -165,17 +165,18 @@
     <img src="{{ asset('assets/img/logo/velora_logo.svg') }}" alt="Velora">
     <span>Velora</span>
   </a>
-  <div class="nav-links">
+ <div class="nav-links">
+    <a href="{{ url('/') }}">Home</a>
     <a href="#opportunity" class="nav-anchor">Opportunity</a>
     <a href="#technology" class="nav-anchor">Technology</a>
-    <a href="#revenue" class="nav-anchor">Revenue</a>
+    <a href="{{ url('/company') }}">Company</a>
     <a href="#roadmap" class="nav-anchor">Roadmap</a>
     @auth
-      <a href="{{ route('dashboard') }}" class="nav-cta">Dashboard</a>
+      <a href="{{ route('dashboard') }}" class="nav-cta">Access Dashboard</a>
     @else
       <a href="{{ route('login') }}" class="nav-cta">Sign In</a>
     @endauth
-  </div>
+</div>
 </nav>
 
 {{-- HERO --}}
@@ -453,6 +454,142 @@
 })();
 </script>
 
+{{-- TECHNOLOGY --}}
+<section id="technology" class="sec">
+  <div class="sec-header reveal">
+    <span class="eyebrow">Technology Edge</span>
+    <h2 class="sec-title">Built for the real world</h2>
+    <div class="sec-line"></div>
+  </div>
+  <div class="tech-grid">
+    <ul class="tech-list">
+      <li class="reveal"><i class='bx bx-wifi-off'></i><div><h5>Offline-First PWA</h5><p>Works without internet. Data syncs automatically when reconnected — critical for Pakistan's connectivity landscape.</p></div></li>
+      <li class="reveal rd1"><i class='bx bx-shield-check'></i><div><h5>Multi-Tenant Architecture</h5><p>One platform serves unlimited showrooms with complete data isolation — infinite scalability built-in.</p></div></li>
+      <li class="reveal rd2"><i class='bx bx-qr-scan'></i><div><h5>QR Code Integration</h5><p>Every vehicle gets a unique QR code — scan on mobile to instantly access complete details, documents and history.</p></div></li>
+      <li class="reveal rd3"><i class='bx bx-envelope'></i><div><h5>Automated Communications</h5><p>Professional invoices delivered via Email and WhatsApp with one click — reducing manual overhead by 80%.</p></div></li>
+    </ul>
+    <div class="tech-visual reveal">
+      <i class='bx bx-chip'></i>
+      <h3>Enterprise-grade stack</h3>
+      <p>Built on battle-tested technologies used by Fortune 500 companies worldwide.</p>
+      <div class="tech-tags">
+        <span class="tech-tag">Laravel 12</span>
+        <span class="tech-tag">MySQL</span>
+        <span class="tech-tag">PWA</span>
+        <span class="tech-tag">Bootstrap 5</span>
+        <span class="tech-tag">Service Workers</span>
+        <span class="tech-tag">ApexCharts</span>
+        <span class="tech-tag">REST API Ready</span>
+        <span class="tech-tag">Multi-Tenant</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{-- REVENUE --}}
+<section id="revenue" class="sec sec-alt">
+  <div class="sec-header reveal">
+    <span class="eyebrow">Revenue Model</span>
+    <h2 class="sec-title">Multiple revenue streams</h2>
+    <div class="sec-line"></div>
+    <p class="sec-sub">Diversified income model designed for sustainable growth and investor returns.</p>
+  </div>
+  <div class="rev-grid">
+    <div class="rev-card reveal rd1"><i class='bx bx-credit-card'></i><h4>SaaS Subscription</h4><p>Monthly/annual per-showroom licensing. Rs. 15,000–50,000/month per showroom based on branches and users.</p></div>
+    <div class="rev-card reveal rd2"><i class='bx bx-code-alt'></i><h4>Custom Implementation</h4><p>One-time setup fee for enterprise clients requiring custom branding, integrations and dedicated support.</p></div>
+    <div class="rev-card reveal rd3"><i class='bx bx-expand'></i><h4>White Label Licensing</h4><p>License the platform to other automotive brands or regional distributors across South Asia and Middle East.</p></div>
+  </div>
+</section>
+
+{{-- ROADMAP --}}
+<section id="roadmap" class="sec">
+  <div class="sec-header reveal">
+    <span class="eyebrow">Growth Roadmap</span>
+    <h2 class="sec-title">Our journey ahead</h2>
+    <div class="sec-line"></div>
+  </div>
+  <div class="road-grid">
+    <div class="road-item reveal rd1"><span class="road-badge done-b">Completed</span><div class="road-dot done"><i class='bx bx-check'></i></div><h5>Phase 1 — Core Platform</h5><p>Multi-branch CRUD, RBAC, invoicing, PWA offline sync, QR codes, audit logs</p></div>
+    <div class="road-item reveal rd2"><span class="road-badge active-b">In Progress</span><div class="road-dot active">2</div><h5>Phase 2 — Multi-Tenant</h5><p>Showroom isolation, chairwoman dashboard, investor portal, company branding pages</p></div>
+    <div class="road-item reveal rd3"><span class="road-badge soon-b">Q3 2026</span><div class="road-dot soon">3</div><h5>Phase 3 — Mobile App</h5><p>Native iOS/Android app, push notifications, camera-based document scanning</p></div>
+    <div class="road-item reveal rd4"><span class="road-badge soon-b">Q1 2027</span><div class="road-dot soon">4</div><h5>Phase 4 — Regional Scale</h5><p>UAE, Saudi Arabia, Bangladesh expansion with multi-language and multi-currency support</p></div>
+  </div>
+</section>
+
+{{-- CTA + INVEST FORM --}}
+<section id="cta" class="sec-alt">
+  <div class="reveal" style="text-align:center;margin-bottom:3rem;">
+    <span class="eyebrow">Get Involved</span>
+    <h2>Ready to invest in Pakistan's automotive future?</h2>
+    <p>Join us in disrupting a Rs. 2.4 trillion industry. Early investors get preferred terms and board advisory positions.</p>
+  </div>
+
+  @if(session('inquiry_success'))
+  <div class="reveal" style="max-width:560px;margin:0 auto 2rem;background:rgba(113,221,55,0.1);border:1px solid rgba(113,221,55,0.35);color:#71dd37;padding:1rem 1.4rem;border-radius:14px;font-size:.85rem;text-align:center;">
+    <i class='bx bx-check-circle' style="font-size:1.1rem;vertical-align:-2px;margin-right:6px;"></i>
+    {{ session('inquiry_success') }}
+  </div>
+  @endif
+<form action="{{ route('investor.inquiry') }}" method="POST" class="reveal" style="max-width:560px;margin:0 auto;background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:2.4rem;backdrop-filter:blur(10px);">
+    @csrf
+
+<div style="margin-bottom:1.2rem;">
+  <label style="display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem;">Investment Range</label>
+  <select name="investment_range" id="invRangeSelect" onchange="toggleCustomAmount(this.value)"
+    style="width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:10px;padding:.8rem 1rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.88rem;outline:none;">
+    <option value="" style="background:#0d0d1a;">Select range</option>
+    <option value="Under Rs. 5M" style="background:#0d0d1a;">Under Rs. 5M</option>
+    <option value="Rs. 5M – 20M" style="background:#0d0d1a;">Rs. 5M – 20M</option>
+    <option value="Rs. 20M – 100M" style="background:#0d0d1a;">Rs. 20M – 100M</option>
+    <option value="Above Rs. 100M" style="background:#0d0d1a;">Above Rs. 100M</option>
+    <option value="Other" style="background:#0d0d1a;">Other (specify amount)</option>
+  </select>
+</div>
+
+<div id="customAmountWrap" style="display:none;margin-bottom:1.2rem;">
+  <label style="display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem;">Specify Amount</label>
+  <input type="text" name="custom_amount" value="{{ old('custom_amount') }}"
+    style="width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:10px;padding:.8rem 1rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.88rem;outline:none;transition:border-color .3s;"
+    onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--glass-border)'"
+    placeholder="e.g. Rs. 7,500,000">
+</div>
+
+<div style="margin-bottom:1.6rem;">
+  <label style="display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem;">Interested In <span style="color:var(--text-dim);font-weight:400;text-transform:none;letter-spacing:0;">(hold Ctrl / Cmd to select multiple)</span></label>
+  <select name="investment_targets[]" multiple size="6"
+    style="width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:10px;padding:.5rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;outline:none;">
+
+    <option value="Company: Velora Group" style="background:#0d0d1a;color:#f0f0ff;padding:8px;">Velora Group (entire company)</option>
+
+    @foreach($showrooms as $showroom)
+    <option value="Showroom: {{ $showroom->name }}" style="background:#0d0d1a;color:#f0f0ff;padding:8px;">{{ $showroom->name }} — showroom ({{ $showroom->city }})</option>
+    @endforeach
+
+    @foreach($branches as $branch)
+    <option value="Branch: {{ $branch->name }}" style="background:#0d0d1a;color:#f0f0ff;padding:8px;">{{ $branch->name }} — branch ({{ $branch->showroom?->name }})</option>
+    @endforeach
+
+  </select>
+</div>
+
+<div style="margin-bottom:1.6rem;">
+  <label style="display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem;">Message</label>
+  <textarea name="message" rows="3"
+    style="width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:10px;padding:.8rem 1rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.88rem;outline:none;resize:vertical;transition:border-color .3s;"
+    onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--glass-border)'"
+    placeholder="Tell us about your interest...">{{ old('message') }}</textarea>
+</div>
+
+    <button type="submit" class="btn-primary" style="width:100%;justify-content:center;border:none;cursor:pointer;">
+      <i class='bx bx-send'></i> Submit Inquiry
+    </button>
+  </form>
+
+  <div class="reveal" style="text-align:center;margin-top:2rem;">
+    <a href="{{ url('/') }}" class="btn-ghost"><i class='bx bx-home'></i> View Platform</a>
+  </div>
+</section>
+
 {{-- FOOTER --}}
 <footer>
   <div class="footer-logo">
@@ -516,6 +653,21 @@ setTimeout(invStart,600);
 </script>
 <style>
 @keyframes twinkle2{0%,100%{opacity:.2}50%{opacity:.8}}
+
+select[multiple] { scrollbar-width: thin; scrollbar-color: var(--purple) rgba(255,255,255,0.05); }
+select[multiple]::-webkit-scrollbar { width: 8px; }
+select[multiple]::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 10px; }
+select[multiple]::-webkit-scrollbar-thumb { background: rgba(105,108,255,0.4); border-radius: 10px; }
+select[multiple]::-webkit-scrollbar-thumb:hover { background: var(--purple); }
+select[multiple] option:checked { background: var(--purple) !important; color: #fff !important; }
+
 </style>
+
+<script>
+function toggleCustomAmount(val) {
+  document.getElementById('customAmountWrap').style.display = (val === 'Other') ? 'block' : 'none';
+}
+</script>
+
 </body>
 </html>

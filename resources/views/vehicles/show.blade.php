@@ -108,11 +108,15 @@
                                     <p>{{ $vehicle->notes ?? 'No notes available.' }}</p>
                                 </div>
 
-                                <div class="col-12">
-                                    <strong>Documents:</strong><br>
-                                    @if($vehicle->documents->count() > 0)
+                               <div class="col-12">
+                                    <strong>Documents:</strong>
+                                    <span class="badge bg-label-secondary ms-1" style="font-size:10px;">
+                                        <i class="bx bx-lock-alt"></i> Confidential — visible only to uploader & supervisors
+                                    </span>
+                                    <br>
+                                    @if($visibleDocuments->count() > 0)
                                     <ul class="list-group mt-2">
-                                        @foreach($vehicle->documents as $doc)
+                                        @foreach($visibleDocuments as $doc)
                                         <li class="list-group-item">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank">
@@ -137,14 +141,23 @@
                                                     </a>
                                                 </div>
                                             </div>
-                                            @if($doc->is_verified)
-                                            <small class="text-muted">Verified by {{ $doc->verifiedBy->name ?? 'N/A' }} on {{ $doc->verified_at?->format('d M Y') }}</small>
-                                            @endif
+                                            <small class="text-muted">
+                                                Uploaded by {{ $doc->uploadedBy->name ?? 'Unknown' }}
+                                                @if($doc->is_verified)
+                                                    · Verified by {{ $doc->verifiedBy->name ?? 'N/A' }} on {{ $doc->verified_at?->format('d M Y') }}
+                                                @endif
+                                            </small>
                                         </li>
                                         @endforeach
                                     </ul>
                                     @else
-                                    <p class="text-muted">No documents uploaded.</p>
+                                    <p class="text-muted mt-2">
+                                        @if($vehicle->documents->count() > 0)
+                                            Documents exist for this vehicle but are restricted to the uploader and their supervisors.
+                                        @else
+                                            No documents uploaded.
+                                        @endif
+                                    </p>
                                     @endif
                                 </div>
                             </div>

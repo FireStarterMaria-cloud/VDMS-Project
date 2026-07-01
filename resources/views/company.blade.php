@@ -581,18 +581,18 @@
         <img src="{{ asset('assets/img/logo/velora_logo.svg') }}" alt="Velora">
         <span>Velora</span>
     </a>
-    <div class="nav-links">
-        <a href="#showrooms" class="nav-anchor">Showrooms</a>
-        <a href="#team" class="nav-anchor">Team</a>
-        <a href="#vlogs" class="nav-anchor">Vlogs</a>
-        <a href="#story" class="nav-anchor">Story</a>
-        <a href="#contact" class="nav-anchor">Contact</a>
-        @auth
-            <a href="{{ url('/dashboard') }}" class="nav-cta">Dashboard</a>
-        @else
-            <a href="{{ url('/login') }}" class="nav-cta">Sign In</a>
-        @endauth
-    </div>
+   <div class="nav-links">
+    <a href="{{ url('/') }}">Home</a>
+    <a href="#showrooms" class="nav-anchor">Showrooms</a>
+    <a href="#team" class="nav-anchor">Team</a>
+    <a href="{{ url('/investor') }}">Investors</a>
+    <a href="#contact" class="nav-anchor">Contact</a>
+    @auth
+        <a href="{{ url('/dashboard') }}" class="nav-cta">Access Dashboard</a>
+    @else
+        <a href="{{ url('/login') }}" class="nav-cta">Sign In</a>
+    @endauth
+</div>
 </nav>
 
 {{-- HERO --}}

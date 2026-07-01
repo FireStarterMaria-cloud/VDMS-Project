@@ -224,6 +224,30 @@
       .pwa-inner{grid-template-columns:1fr}
       .footer-inner{flex-direction:column;gap:16px;text-align:center}
     }
+
+    .nav-dropdown { position: relative; }
+.nav-dropdown-menu {
+  position: absolute; top: calc(100% + 10px); right: 0;
+  min-width: 200px;
+  background: rgba(10,10,20,0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(105,108,255,0.25);
+  border-radius: 12px;
+  padding: 8px;
+  opacity: 0; visibility: hidden; transform: translateY(-8px);
+  transition: all 0.25s ease;
+  z-index: 200;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+.nav-dropdown-menu.open { opacity: 1; visibility: visible; transform: translateY(0); }
+.nav-dropdown-menu a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 8px;
+  color: #c8c8e8 !important; text-decoration: none;
+  font-size: 13px; transition: all 0.2s;
+}
+.nav-dropdown-menu a:hover { background: rgba(105,108,255,0.15); color: #fff !important; }
+.nav-dropdown-divider { height: 1px; background: rgba(105,108,255,0.15); margin: 6px 4px; }
   </style>
 </head>
 <body>
@@ -239,8 +263,14 @@
   <a href="#modules" onclick="closeMM()"><i class='bx bx-grid-alt me-2'></i>Modules</a>
   <a href="#branches" onclick="closeMM()"><i class='bx bx-map-pin me-2'></i>Branches</a>
   <a href="#roles" onclick="closeMM()"><i class='bx bx-shield me-2'></i>Roles</a>
-  <a href="#pwa" onclick="closeMM()"><i class='bx bx-wifi me-2'></i>Offline PWA</a>
+ <a href="#pwa" onclick="closeMM()"><i class='bx bx-wifi me-2'></i>Offline PWA</a>
+<a href="{{ url('/company') }}" onclick="closeMM()"><i class='bx bx-building me-2'></i>Company</a>
+<a href="{{ url('/investor') }}" onclick="closeMM()"><i class='bx bx-line-chart me-2'></i>Investors</a>
+@auth
+  <a href="{{ route('dashboard') }}" class="btn-login"><i class='bx bx-dashboard'></i> Access Dashboard</a>
+@else
   <a href="{{ route('login') }}" class="btn-login"><i class='bx bx-log-in'></i> Login</a>
+@endauth
 </div>
 
 {{-- NAVBAR --}}
@@ -250,14 +280,38 @@
       <img src="{{ asset('assets/img/logo/velora_logo.svg') }}" alt="Velora">
       <span class="nav-brand-text">Velora <span>VMS</span></span>
     </a>
-    <div class="nav-links">
-      <a href="#features">Features</a>
-      <a href="#modules">Modules</a>
-      <a href="#branches">Branches</a>
-      <a href="#roles">Roles</a>
-      <a href="#pwa">PWA</a>
-      <a href="{{ route('login') }}" class="btn-login"><i class='bx bx-log-in'></i> Login</a>
+   <div class="nav-links">
+  <a href="#features">Features</a>
+  <a href="#modules">Modules</a>
+  <a href="#branches">Branches</a>
+  <a href="{{ url('/company') }}">Company</a>
+  <a href="{{ url('/investor') }}">Investors</a>
+ @auth
+  <div class="nav-dropdown">
+    <a href="javascript:void(0)" class="btn-login" onclick="toggleNavDropdown(event)">
+      <i class='bx bx-dashboard'></i> Access Dashboard
+      <i class='bx bx-chevron-down' style="margin-left:6px;font-size:14px;"></i>
+    </a>
+    <div class="nav-dropdown-menu" id="navDropdownMenu">
+      <a href="{{ route('dashboard') }}"><i class='bx bx-dashboard'></i> Dashboard</a>
+      <a href="{{ route('profile.edit') }}"><i class='bx bx-user'></i> Profile</a>
+      <div class="nav-dropdown-divider"></div>
+      <a href="{{ route('login') }}"><i class='bx bx-log-in'></i> Switch Account</a>
     </div>
+  </div>
+@else
+  <div class="nav-dropdown">
+    <a href="javascript:void(0)" class="btn-login" onclick="toggleNavDropdown(event)">
+      <i class='bx bx-log-in'></i> Login
+      <i class='bx bx-chevron-down' style="margin-left:6px;font-size:14px;"></i>
+    </a>
+    <div class="nav-dropdown-menu" id="navDropdownMenu">
+      <a href="{{ route('login') }}"><i class='bx bx-log-in'></i> Login</a>
+      <a href="{{ route('register') }}"><i class='bx bx-user-plus'></i> Register</a>
+    </div>
+  </div>
+@endauth
+</div>
     <button class="nav-toggle" onclick="openMM()"><i class='bx bx-menu'></i></button>
   </div>
 </nav>
@@ -617,6 +671,18 @@ const so = new IntersectionObserver(entries => {
 }, {threshold:0.3});
 const statsEl = document.querySelector('.stats-s');
 if(statsEl) so.observe(statsEl);
+
+
+function toggleNavDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('navDropdownMenu').classList.toggle('open');
+}
+document.addEventListener('click', () => {
+  const menu = document.getElementById('navDropdownMenu');
+  if(menu) menu.classList.remove('open');
+});
+
+
 </script>
 </body>
 </html>

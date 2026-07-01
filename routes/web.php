@@ -30,6 +30,18 @@ Route::post('/invoices/{invoice}/send-approval', [InvoiceController::class, 'sen
 
 Route::get('/company', [App\Http\Controllers\CompanyController::class, 'index'])->name('company.index');
 
+
+// Investor Page
+Route::get('/investor', function() {
+    $showrooms = App\Models\Showroom::where('is_active', true)->get();
+    $branches  = App\Models\Branch::where('is_active', true)->with('showroom')->get();
+    return view('investor', compact('showrooms', 'branches'));
+})->name('investor');
+
+Route::post('/investor/inquiry', [App\Http\Controllers\InvestmentInquiryController::class, 'store'])->name('investor.inquiry');
+
+
+
 // ===================== BREEZE AUTH ROUTES =====================
 require __DIR__.'/auth.php';
 
@@ -53,8 +65,9 @@ Route::prefix('showrooms')->name('showrooms.')->group(function () {
     Route::delete('/{showroom}', [ShowroomController::class, 'destroy'])->name('destroy');
 });
 
-// Investor Page
-Route::get('/investor', function() { return view('investor'); })->name('investor');
+Route::get('/showrooms-overview', [App\Http\Controllers\ShowroomController::class, 'overview'])->name('showrooms.overview');
+Route::get('/showrooms/{showroom}/branches', [App\Http\Controllers\ShowroomController::class, 'branches'])->name('showrooms.branches');
+Route::get('/investment-inquiries', [App\Http\Controllers\InvestmentInquiryController::class, 'index'])->name('investment-inquiries.index');
 
 
 
